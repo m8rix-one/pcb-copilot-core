@@ -6,12 +6,27 @@
     python -m pcbcopilot release <project>
     python -m pcbcopilot list
     python -m pcbcopilot mcp <project>        (what Claude Code / Claude Desktop run to get the tools)
+    python -m pcbcopilot --version            (the release, and the commit when run from a git checkout)
 """
 import argparse
 import json
+import os
+import subprocess
 import sys
 
-from . import build, projects
+from . import __version__, build, projects
+
+
+def version():
+    """The release ("0.1.0"), with the commit and its date when this is a git checkout: "0.1.0 (96501e7, 2026-10-14)".
+    So a bug report can say exactly which code it ran."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        r = subprocess.run(["git", "log", "-1", "--format=%h %cs"], cwd=root, capture_output=True, text=True, timeout=10)
+        rev = r.stdout.split() if r.returncode == 0 else []
+    except (OSError, subprocess.SubprocessError):
+        rev = []
+    return f"{__version__} ({rev[0]}, {rev[1]})" if len(rev) == 2 else __version__
 
 
 def _show(ev):
@@ -39,6 +54,7 @@ def _build(pid, route=True):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="pcbcopilot", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--version", action="version", version=f"%(prog)s {version()}")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("design", help="create a project and let the agent design it from a brief")
     p.add_argument("brief")

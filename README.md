@@ -53,6 +53,9 @@ python -m pcbcopilot chat usb-c-powered-esp32-c3-sensor-board "add a reset butto
 # rebuild without AI (same design.json, same board every time), and make the fab files
 python -m pcbcopilot build usb-c-powered-esp32-c3-sensor-board
 python -m pcbcopilot release usb-c-powered-esp32-c3-sensor-board
+
+# which code you are running (the release, and the commit when run from a git checkout)
+python -m pcbcopilot --version
 ```
 
 Projects live in `~/.pcb-copilot-core/projects/<id>/`: `design.json` (the circuit IR), `kicad/` (a normal KiCad

@@ -4,6 +4,7 @@
 
 Works with Claude Code, Claude Desktop, Cursor and any other MCP client.
 """
+from .. import __version__
 import argparse
 import json
 import sys
@@ -19,7 +20,7 @@ def handle(msg, pid):
     if method == "initialize":
         return {"protocolVersion": msg.get("params", {}).get("protocolVersion", PROTOCOL),
                 "capabilities": {"tools": {"listChanged": False}},
-                "serverInfo": {"name": "pcb-copilot-core", "version": "0.1"},
+                "serverInfo": {"name": "pcb-copilot-core", "version": __version__},
                 "instructions": "PCB Copilot Core: design a circuit board on KiCad 10 with real JLCPCB/LCSC parts."}
     if method == "tools/list":
         return {"tools": [{"name": t["name"], "description": t["description"], "inputSchema": t["inputSchema"]}

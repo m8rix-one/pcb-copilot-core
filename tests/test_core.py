@@ -132,5 +132,20 @@ class SexprTests(unittest.TestCase):
         self.assertEqual(loads(dumps(e)), e)
 
 
+class VersionTests(unittest.TestCase):
+    def test_version_flag_prints_the_release(self):
+        import contextlib
+        import io
+        from pcbcopilot import __main__ as cli, __version__
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), self.assertRaises(SystemExit) as e:
+            cli.main(["--version"])
+        self.assertEqual(e.exception.code, 0)
+        self.assertTrue(out.getvalue().startswith(f"pcbcopilot {__version__}"), out.getvalue())
+        self.assertIn(__version__, cli.version())
+        with mock.patch.object(cli.subprocess, "run", side_effect=OSError("no git")):
+            self.assertEqual(cli.version(), __version__)                   # a copy without git: the release alone
+
+
 if __name__ == "__main__":
     unittest.main()
